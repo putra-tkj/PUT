@@ -9,24 +9,19 @@ async function startServer() {
   const app = express();
   const PORT = 3000;
 
-  // Middleware untuk JSON
-  app.use(express.json());
-
-  // Health Check API
-  app.get('/api/health', (req, res) => {
-    res.json({ status: 'ok', timestamp: new Date().toISOString() });
-  });
-
+  // Mode Pengembangan
   if (process.env.NODE_ENV !== 'production') {
-    // Mode Pengembangan: Gunakan middleware Vite
     const vite = await createViteServer({
       server: { middlewareMode: true },
       appType: 'spa',
     });
+    
+    // Gunakan middleware vite. Ini akan menangani static assets DAN index.html (karena appType: 'spa')
     app.use(vite.middlewares);
-    console.log('Dev server running with Vite middleware');
+    
+    console.log('Dev server running with standard Vite SPA middleware');
   } else {
-    // Mode Produksi: Melayani file statis dari dist
+    // Mode Produksi
     const distPath = path.join(__dirname, 'dist');
     app.use(express.static(distPath));
     app.get('*', (req, res) => {
@@ -35,12 +30,16 @@ async function startServer() {
     console.log('Production server running');
   }
 
+  // Health Check API (Taruh di bawah jika ingin didelegasikan, tapi biasanya rute API di atas)
+  app.get('/api/health', (req, res) => {
+    res.json({ status: 'ok' });
+  });
+
   app.listen(PORT, '0.0.0.0', () => {
-    console.log(`🚀 Server ready at http://0.0.0.0:${PORT}`);
+    console.log(`🚀 Server listening on port ${PORT}`);
   });
 }
 
-startServer().catch((err) => {
-  console.error('Failed to start server:', err);
-  process.exit(1);
+startServer().catch(err => {
+  console.error('Startup error:', err);
 });
