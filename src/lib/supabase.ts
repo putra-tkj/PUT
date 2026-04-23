@@ -12,9 +12,14 @@ export function getSupabase() {
     const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
 
     if (!supabaseUrl || !supabaseAnonKey) {
-      console.error('Supabase configuration missing (VITE_SUPABASE_URL / VITE_SUPABASE_ANON_KEY).');
-      // Return a dummy object if needed, but the caller should handle the null/error
-      throw new Error('Supabase URL and Anon Key are required. Please check your environment variables.');
+      console.warn('Supabase configuration missing (VITE_SUPABASE_URL / VITE_SUPABASE_ANON_KEY).');
+      // Return a non-functional proxy instead of throwing to prevent top-level crash
+      return new Proxy({} as any, {
+        get: () => {
+          console.error('Supabase keys are not configured yet.');
+          return () => ({ error: { message: 'Supabase keys missing' } });
+        }
+      });
     }
 
     supabaseInstance = createClient(supabaseUrl, supabaseAnonKey);
