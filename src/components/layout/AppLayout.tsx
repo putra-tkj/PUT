@@ -4,10 +4,12 @@ import Sidebar from './Sidebar';
 import Header from './Header';
 import { supabase } from '@/src/lib/supabase';
 import { Profile } from '@/src/types';
+import { cn } from '@/src/lib/utils';
 
 export default function AppLayout() {
   const [profile, setProfile] = useState<Profile | null>(null);
   const [loading, setLoading] = useState(true);
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -47,11 +49,27 @@ export default function AppLayout() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 flex">
-      <Sidebar role={profile?.role || null} />
-      <div className="flex-1 flex flex-col transition-all duration-300 ml-20 lg:ml-64">
-        <Header user={profile} />
-        <main className="p-8">
+    <div className="min-h-screen bg-gray-50 flex overflow-x-hidden">
+      {/* Background Overlay for Mobile */}
+      {isSidebarOpen && (
+        <div 
+          className="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-40 lg:hidden"
+          onClick={() => setIsSidebarOpen(false)}
+        />
+      )}
+
+      <Sidebar 
+        role={profile?.role || null} 
+        isOpen={isSidebarOpen} 
+        onClose={() => setIsSidebarOpen(false)}
+      />
+      
+      <div className={cn(
+        "flex-1 flex flex-col transition-all duration-300 min-w-0",
+        "lg:ml-64" // On large screens, sidebar is always w-64
+      )}>
+        <Header user={profile} onMenuClick={() => setIsSidebarOpen(true)} />
+        <main className="p-4 lg:p-8">
           <Outlet context={{ profile }} />
         </main>
       </div>
