@@ -1,0 +1,35 @@
+@import "tailwindcss";
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,200..800;1,200..800&display=swap');
+
+@theme {
+  --font-sans: "Plus Jakarta Sans", ui-sans-serif, system-ui, sans-serif;
+  --color-primary: #ef4444; /* Red 600 */
+  --color-primary-hover: #dc2626;
+  --color-slate-50: #f8fafc;
+  --color-slate-100: #f1f5f9;
+  --color-slate-200: #e2e8f0;
+  --color-slate-500: #64748b;
+  --color-slate-600: #475569;
+  --color-slate-800: #1e293b;
+  --color-slate-900: #0f172a;
+}
+
+body {
+  font-family: var(--font-sans);
+  background-color: var(--color-slate-50);
+  color: var(--color-slate-900);
+}
+
+@layer components {
+  .bento-card {
+    @apply bg-white border border-slate-200 rounded-[1.5rem] p-6 shadow-sm hover:shadow-md transition-all duration-300;
+  }
+
+  .status-pill {
+    @apply p-1 px-3 rounded-full text-[11px] font-bold uppercase tracking-wider;
+  }
+
+  .sidebar-active {
+    @apply bg-primary text-white shadow-lg shadow-red-500/20;
+  }
+}
